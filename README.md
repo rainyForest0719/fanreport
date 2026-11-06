@@ -1,0 +1,121 @@
+# FAN REPORT
+
+팬이 만든 비공식 신고 메일 작성 도우미입니다. 소속사와 관계가 없으며, 신고 접수기관이 아닙니다.
+
+공식 신고 양식에 따라 여러 게시물을 한 통의 메일로 정리하고, 사용자가 연결한 본인 Gmail로 증거 자료와 함께 직접 발송합니다.
+
+> 이 저장소는 소스코드 공개용입니다. 사이트 배포 및 불특정 다수를 대상으로 한 Google OAuth 공개 운영 승인을 의미하지 않습니다.
+
+## 주요 기능
+
+- 기본 수신 주소 선택 또는 직접 입력, CC·BCC와 설명
+- 신고 여러 건 추가·삭제
+- 게시 일시, 플랫폼·URL, 작성자, 게시물 내용 입력
+- 다중 첨부, 이미지 미리보기, 개별 삭제
+- 제목·본문 자동 작성 및 독립적인 직접 편집
+- 수신자·본문·첨부 최종 확인과 실제 발송 동의
+- 동일 구성의 최근 메일 재발송 및 변경된 수동 본문 추가 확인
+- 모바일·키보드 사용 및 항목별 오류 안내
+
+기본 수신 주소는 운영자가 제공한 `jaurim_protect@nol.com`이며, `src/App.tsx`의 `AGENCY`에서 관리합니다. 발송 전 소속사 공지에서 최신 수신 주소와 양식을 확인하십시오.
+
+## 기술
+
+Vite / React / TypeScript / SCSS. 별도 백엔드·DB 없이 동작하는 정적 사이트입니다. Node.js 24 환경에서 빌드와 테스트를 확인했습니다.
+
+## 로컬 실행
+
+```powershell
+git clone https://github.com/rainyForest0719/fanreport.git
+cd fanreport
+npm ci
+Copy-Item .env.example .env.local
+npm run dev
+```
+
+[http://127.0.0.1:5178/](http://127.0.0.1:5178/)에서 확인합니다. Google Client ID가 비어 있어도 작성·첨부·최종 확인은 가능하며 실제 발송은 비활성화됩니다.
+
+```powershell
+npm test
+npm run build
+npm run preview
+```
+
+정적 빌드 결과는 `dist/`입니다. 개발 서버와 미리보기는 같은 5178 포트를 사용하므로 동시에 실행하지 마십시오.
+
+## Gmail 연결
+
+1. 자신의 Google Cloud 프로젝트에서 Gmail API를 활성화합니다.
+2. Google Auth Platform에 앱 정보와 연락처를 설정합니다.
+3. 개발 중에는 External / Testing 상태로 두고 시험 계정을 테스트 사용자로 등록합니다.
+4. 데이터 액세스에는 다음 범위 하나만 등록합니다.
+   `https://www.googleapis.com/auth/gmail.send`
+5. Web application 유형의 OAuth Client ID를 생성합니다.
+6. 승인된 JavaScript 원본에 아래 주소를 등록합니다.
+   - `http://127.0.0.1:5178`
+   - `http://localhost:5178`
+7. 로컬 `.env.local`에 입력하고 개발 서버를 재시작합니다.
+
+```dotenv
+VITE_GOOGLE_CLIENT_ID=발급받은_웹_클라이언트_ID
+```
+
+GIS 팝업 토큰 방식을 사용하므로 별도 리디렉션 URI, API key, Client Secret, 갱신 토큰을 사용하지 않습니다. 사용자는 Gmail 연결 준비 → Google 계정 선택 및 연결 순서로 직접 승인합니다. 계정 연결만으로 메일이 발송되지는 않습니다.
+
+Client ID는 공개 식별자이며 `VITE_` 값은 프런트엔드 빌드에 포함됩니다. **Client Secret·접근 토큰·실제 신고 자료를 코드, 환경변수 예시, 이슈, 커밋에 넣지 마십시오.** `.env.local`은 Git에서 제외됩니다. 이 저장소를 복제한 사람은 자신의 Google 프로젝트와 Client ID를 사용하십시오.
+
+## 개인정보 처리
+
+- 신고 내용·이메일·파일·Google 토큰은 현재 페이지에서 임시 처리합니다.
+- 신고 자료를 사이트 운영자 서버로 제출하거나 localStorage, sessionStorage, IndexedDB, 쿠키에 저장하지 않습니다.
+- 입력 수집, 세션 녹화, 분석·광고 추적 SDK를 포함하지 않습니다.
+- Google 연결을 선택하면 Google 서비스와 통신하고, 발송 확정 후 브라우저가 Gmail API에 직접 요청합니다.
+- 발송한 메일은 본인의 보낸메일함 및 수신자의 메일함에 남습니다.
+- 최근 발송 비교용 해시는 현재 페이지에서만 임시 보관합니다.
+- 새로고침 시 작성 상태가 초기화됩니다. 페이지 이탈 시 앱의 토큰을 제거합니다. 브라우저의 복원 기능과 원본 파일, 이미 발송한 메일까지 삭제하는 것은 아닙니다.
+- 호스팅·CDN 접속 기록은 실제 배포 업체의 설정에 따라 별도 검토가 필요합니다.
+
+`public/privacy.html`과 `public/terms.html`은 **운영 정보 확정 전 검토본**입니다. 공개 전 운영자·문의 창구·호스팅 로그·보유 기간·처리 관계·최종 시행일을 실제 정보로 반영해야 합니다.
+
+## 제한과 안전장치
+
+- 첨부 합계 18 MiB, 최대 30개. 빈 파일은 거절합니다.
+- 본문 UTF-8 기준 512 KiB, 수신자·CC·BCC 합계 50명.
+- 발송 요청 응답 대기 60초, 자동 재발송 없음.
+- 성공 HTTP 응답과 유효한 메시지 ID를 함께 받은 경우에만 발송 확인 표시.
+- 네트워크 단절·서버 오류·시간 초과는 이미 발송됐을 수 있으므로 보낸메일함 확인 안내.
+- 메일 헤더 주입 차단, 긴 한글 파일명 및 주소 헤더 접기.
+- 동일 메일 재발송 확인은 현재 페이지에서의 최근 비교에 한정됩니다.
+
+**이러한 브라우저 측 장치는 실수 방지용이며 고의적인 대량 발송을 강제 차단하는 서버 보안 경계가 아닙니다.** 앱을 공개하면 악용 대응과 Google 정책 준수에 대한 운영 검토가 필요합니다.
+
+## 공개 배포 전
+
+이 저장소에는 자동 배포 워크플로를 포함하지 않습니다. 소스 업로드만으로 사이트나 Google 앱을 공개하지 않습니다.
+
+- 운영 도메인과 HTTPS를 확정하고 실제 origin을 Google에 등록
+- Gmail 민감 권한 공개 운영에 필요한 검증·정책·도메인 요건 확인
+- 운영자 및 개인정보 안내·약관 확정
+- 호스팅 로그와 위탁·국외 처리 관계 검토
+- 실제 기기·스크린리더·Google 연결·송수신 및 BCC 확인
+- 악용 대응과 소속사 수신 정책 확인
+- `public/_headers`를 지원하는 호스트에서는 해당 헤더를 적용하고, 다른 호스트에서는 동등한 설정을 별도로 적용
+
+Vite preview에는 배포용 보안 헤더를 적용합니다. 실제 호스팅에 자동 적용된다는 뜻은 아닙니다. GitHub Pages의 프로젝트 하위 경로에 배포하려면 Vite base와 정책 링크 경로 등을 먼저 조정해야 합니다. 공개용 OAuth 검증과 실제 운영 보안 검토는 별도입니다.
+
+## 검증 및 기록
+
+테스트는 실제 Google 서비스 대신 모의 응답을 사용합니다. 사용자로부터 실제 테스트 메일 수신 성공을 확인했지만, 이것이 Google 공개 운영 승인이나 법률·접근성 인증을 뜻하지는 않습니다.
+
+- [초기 점검](docs/AUDIT-2026-11-06.md)
+- [접근성·개인정보 보완](docs/REMEDIATION-2026-11-06.md)
+- [추가 발송 안전성 보완](docs/HARDENING-2026-11-06.md)
+- [개발용 Google 설정 기록](docs/GOOGLE-SETUP-2026-11-06.md)
+
+점검 기록은 당시 상태와 검사 범위를 담은 문서입니다. 실제 기기, 운영 환경, Google 정책과 법률상 적합성에 대한 최종 검토를 대신하지 않습니다.
+
+## 공식 자료
+
+- [Google GIS 토큰 방식](https://developers.google.com/identity/oauth2/web/guides/use-token-model)
+- [Gmail API 발송](https://developers.google.com/workspace/gmail/api/guides/sending)
+- [Google 공개 앱 검증](https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification)

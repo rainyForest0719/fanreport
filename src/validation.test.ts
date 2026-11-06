@@ -1,0 +1,6 @@
+import {expect,it} from 'vitest';import {validateDraft} from './validation';import {newReport} from './reports';
+const valid=()=>({to:'me@example.org',cc:'',bcc:'',reports:[{...newReport(),platform:'X',url:'https://example.org/post',content:'내용'}],subject:'신고',body:'본문'});
+it('identifies the exact invalid recipient field',()=>{const errors=validateDraft({...valid(),bcc:'invalid'});expect(Object.keys(errors)).toEqual(['recipient-bcc']);});
+it('identifies missing fields in the correct report with stable IDs',()=>{const first=valid().reports[0],second=newReport();const errors=validateDraft({...valid(),reports:[first,second]});expect(Object.keys(errors)).toEqual([second.id+'-platform',second.id+'-url',second.id+'-content']);expect(Object.values(errors).every(e=>e.startsWith('신고 2:'))).toBe(true);});
+it('blocks unsafe URLs and blank edited mail',()=>{const data=valid();data.reports[0].url='javascript:alert(1)';const errors=validateDraft({...data,subject:'',body:''});expect(errors[data.reports[0].id+'-url']).toBeTruthy();expect(errors['mail-subject']).toBeTruthy();expect(errors['mail-body']).toBeTruthy();});
+it('accepts valid CC and BCC lists',()=>{expect(validateDraft({...valid(),cc:'one@example.org;two@example.org',bcc:'hidden@example.org'})).toEqual({});});
