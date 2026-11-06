@@ -4,7 +4,8 @@
 
 공식 신고 양식에 따라 여러 게시물을 한 통의 메일로 정리하고, 사용자가 연결한 본인 Gmail로 증거 자료와 함께 직접 발송합니다.
 
-> 이 저장소는 소스코드 공개용입니다. 사이트 배포 및 불특정 다수를 대상으로 한 Google OAuth 공개 운영 승인을 의미하지 않습니다.
+> 공개 사이트: https://rainyforest0719.github.io/fanreport/
+> Google OAuth 검증은 사이트 배포와 별도입니다. 검증 완료 전에는 Google 경고 및 사용자 제한이 적용될 수 있습니다.
 
 ## 주요 기능
 
@@ -75,7 +76,7 @@ Client ID는 공개 식별자이며 `VITE_` 값은 프런트엔드 빌드에 포
 - 새로고침 시 작성 상태가 초기화됩니다. 페이지 이탈 시 앱의 토큰을 제거합니다. 브라우저의 복원 기능과 원본 파일, 이미 발송한 메일까지 삭제하는 것은 아닙니다.
 - 호스팅·CDN 접속 기록은 실제 배포 업체의 설정에 따라 별도 검토가 필요합니다.
 
-`public/privacy.html`과 `public/terms.html`은 **운영 정보 확정 전 검토본**입니다. 공개 전 운영자·문의 창구·호스팅 로그·보유 기간·처리 관계·최종 시행일을 실제 정보로 반영해야 합니다.
+운영자와 문의 창구는 GitHub 계정 및 Issues, 호스팅은 GitHub Pages입니다. 공개 문의에 신고 자료·주소·토큰을 올리지 마십시오. GitHub는 Pages 방문자의 IP를 보안 목적으로 기록합니다. 세부 사항은 공개 개인정보 안내를 확인하십시오.
 
 ## 제한과 안전장치
 
@@ -89,19 +90,13 @@ Client ID는 공개 식별자이며 `VITE_` 값은 프런트엔드 빌드에 포
 
 **이러한 브라우저 측 장치는 실수 방지용이며 고의적인 대량 발송을 강제 차단하는 서버 보안 경계가 아닙니다.** 앱을 공개하면 악용 대응과 Google 정책 준수에 대한 운영 검토가 필요합니다.
 
-## 공개 배포 전
+## GitHub Pages 배포
 
-이 저장소에는 자동 배포 워크플로를 포함하지 않습니다. 소스 업로드만으로 사이트나 Google 앱을 공개하지 않습니다.
+main 푸시 시 `.github/workflows/pages.yml`이 테스트·빌드 후 GitHub Pages로 배포합니다. 저장소 Settings → Pages의 Source는 GitHub Actions로 설정합니다. Actions 변수 `VITE_GOOGLE_CLIENT_ID`에는 공개 Web Client ID만 입력합니다. 빌드 경로는 `/fanreport/`입니다. Google JavaScript 원본은 경로 없는 `https://rainyforest0719.github.io`를 등록합니다.
 
-- 운영 도메인과 HTTPS를 확정하고 실제 origin을 Google에 등록
-- Gmail 민감 권한 공개 운영에 필요한 검증·정책·도메인 요건 확인
-- 운영자 및 개인정보 안내·약관 확정
-- 호스팅 로그와 위탁·국외 처리 관계 검토
-- 실제 기기·스크린리더·Google 연결·송수신 및 BCC 확인
-- 악용 대응과 소속사 수신 정책 확인
-- `public/_headers`를 지원하는 호스트에서는 해당 헤더를 적용하고, 다른 호스트에서는 동등한 설정을 별도로 적용
+Google Auth Platform의 Production 전환과 gmail.send 민감 권한 검증은 별도입니다. Testing 상태에서는 등록된 테스트 사용자만 연결할 수 있습니다. Production이어도 검증 전에는 경고와 사용자 한도가 남을 수 있으며, 승인 완료를 보장하지 않습니다. 공개 문의 이메일과 도메인 소유 확인, 홈페이지·개인정보 안내·약관 URL 및 시연 영상 등 Google이 요구하는 심사 자료를 준비해야 합니다.
 
-Vite preview에는 배포용 보안 헤더를 적용합니다. 실제 호스팅에 자동 적용된다는 뜻은 아닙니다. GitHub Pages의 프로젝트 하위 경로에 배포하려면 Vite base와 정책 링크 경로 등을 먼저 조정해야 합니다. 공개용 OAuth 검증과 실제 운영 보안 검토는 별도입니다.
+GitHub Pages는 `public/_headers` 사용자 정의 헤더를 적용하지 않습니다. 앱 HTML에는 CSP meta를 적용하지만 frame-ancestors, X-Frame-Options, COOP, Permissions-Policy 등 응답 헤더와 동등하지 않습니다. 이 헤더를 강제하려면 지원 호스팅 또는 프록시를 사용해야 합니다. Vite preview의 헤더 검사는 Pages 응답 헤더 검사를 대신하지 않습니다.
 
 ## 검증 및 기록
 
