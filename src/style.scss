@@ -84,3 +84,9 @@ dialog{max-height:90vh;max-height:90dvh;overflow:auto}dialog #review-title:focus
 .repeat-warning{border:1px solid #8b2522;background:#fff7f6;padding:12px;margin:16px 0}.repeat-warning p{color:#79201e}dialog .repeat-warning .check{margin:10px 0 0}.repeat-warning input{flex-shrink:0}
 
 .report-item:focus{outline:2px solid #315b8c;outline-offset:3px}
+
+.connection-start{scroll-margin-top:16px;margin-bottom:24px}
+.connection-content{padding:0 17px 8px;p{font-size:13px;margin:12px 0}.annotation{font-size:12px;margin:8px 0}.field-error{margin:10px 0}.connection-status{font-size:12px;font-weight:650;color:$accent}}
+.connection-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:14px 0;.primary{width:auto;min-height:44px}button{min-height:44px}}
+.connection a{display:inline-block;text-decoration:underline;text-underline-offset:3px;font-size:12px;padding:6px 0;margin-bottom:14px}
+@media(max-width:760px){.connection-content{padding:0 13px 8px}.connection-actions{align-items:stretch;flex-direction:column;.primary{width:100%}}}
